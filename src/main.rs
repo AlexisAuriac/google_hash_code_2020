@@ -46,7 +46,7 @@ fn write_submission(example_file_name: &str, submission: &Submission) {
 fn sort_libs(orig_state: &mut OrigState) {
     orig_state
         .libs
-        .sort_by(|l1, l2| l1.signup_time.cmp(&l2.signup_time));
+        .sort_by(|l1, l2| l1.books.len().cmp(&l2.books.len()));
 }
 
 fn main() -> Result<(), String> {
