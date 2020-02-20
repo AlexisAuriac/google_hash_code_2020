@@ -122,13 +122,12 @@ fn parse_file_lines(file_lines: &mut Vec<&str>) -> Result<OrigState, String> {
 
 pub fn get_orig_state(file_name: &str) -> Result<OrigState, String> {
     let file_content = load_file(file_name)?;
-    let mut lines = file_content.split('\n').collect::<Vec<_>>();
+    let mut lines = file_content
+        .split('\n')
+        .filter(|s| s != &"")
+        .collect::<Vec<_>>();
 
     match lines.last() {
-        Some(&"") => {
-            lines.pop();
-            parse_file_lines(&mut lines)
-        }
         Some(_) => parse_file_lines(&mut lines),
         _ => Err("Empty file".to_string()),
     }
