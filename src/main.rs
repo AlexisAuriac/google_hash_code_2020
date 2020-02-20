@@ -8,7 +8,7 @@ mod utilities;
 
 use compute_submission::{compute_submission, LibraryScan, Submission};
 use get_args::get_args;
-use get_orig_state::get_orig_state;
+use get_orig_state::{get_orig_state, OrigState};
 
 fn lib_scan_to_string(lib_scan: &LibraryScan) -> String {
     let desc = format!("{} {}", lib_scan.id, lib_scan.books.len());
@@ -43,9 +43,17 @@ fn write_submission(example_file_name: &str, submission: &Submission) {
     file.write_all(string_submission.as_bytes()).unwrap();
 }
 
+fn sort_libs(orig_state: &mut OrigState) {
+    orig_state
+        .libs
+        .sort_by(|l1, l2| l1.signup_time.cmp(&l2.signup_time));
+}
+
 fn main() -> Result<(), String> {
     let args = get_args()?;
-    let orig_state = get_orig_state(&args.file_name)?;
+    let mut orig_state = get_orig_state(&args.file_name)?;
+
+    sort_libs(&mut orig_state);
 
     let submission = compute_submission(&orig_state);
 
