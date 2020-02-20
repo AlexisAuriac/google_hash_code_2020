@@ -1,6 +1,12 @@
 # Cargo
 /target
 
+# Zip
+*.zip
+
+# Output files
+*.txt.output
+
 # Sublime Text
 *.sublime-project
 *.sublime-workspace
