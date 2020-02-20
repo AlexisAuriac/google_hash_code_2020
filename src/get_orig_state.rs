@@ -1,7 +1,8 @@
 use crate::utilities::{load_file, parse_pretty_err};
 
-#[derive(Debug)]
+#[derive(Debug, Clone, Eq, PartialEq)]
 pub struct LibraryDesc {
+    pub id: usize,
     pub signup_time: usize,
     pub books: Vec<usize>,
     pub ship_per_day: usize,
@@ -83,18 +84,27 @@ fn parse_lib_desc(lib_desc: &str) -> Result<(usize, usize, usize), String> {
     ))
 }
 
-fn parse_lib(lib_desc: &str, books: &str) -> Result<LibraryDesc, String> {
+fn parse_lib(
+    wanted_books: &[usize],
+    id: usize,
+    lib_desc: &str,
+    books: &str,
+) -> Result<LibraryDesc, String> {
     let (nb_books, signup_time, ship_per_day) = parse_lib_desc(lib_desc)?;
     let book_ids = books
         .split_whitespace()
         .map(parse_pretty_err)
-        .collect::<Result<Vec<usize>, _>>()?;
+        .collect::<Result<Vec<usize>, _>>()?
+        .into_iter()
+        .filter(|b| wanted_books.contains(b))
+        .collect::<Vec<_>>();
 
-    if nb_books != book_ids.len() {
+    if nb_books < book_ids.len() {
         return Err("There are more books than was said in the description".to_string());
     }
 
     Ok(LibraryDesc {
+        id,
         signup_time,
         books: book_ids,
         ship_per_day,
@@ -113,8 +123,10 @@ fn parse_file_lines(file_lines: &mut Vec<&str>) -> Result<OrigState, String> {
 
     let libs_and_books = zip_libs_with_books(nb_libs, file_lines)?;
 
-    for (lib_desc, books) in libs_and_books {
-        orig_state.libs.push(parse_lib(&lib_desc, &books)?);
+    for (i, (lib_desc, books)) in libs_and_books.iter().enumerate() {
+        orig_state
+            .libs
+            .push(parse_lib(&orig_state.books, i, &lib_desc, &books)?);
     }
 
     Ok(orig_state)
