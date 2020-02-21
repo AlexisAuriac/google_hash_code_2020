@@ -1,15 +1,5 @@
-use crate::get_orig_state::{LibraryDesc, OrigState};
-
-#[derive(Debug)]
-pub struct LibraryScan {
-    pub id: usize,
-    pub books: Vec<usize>,
-}
-
-#[derive(Debug)]
-pub struct Submission {
-    pub libs: Vec<LibraryScan>,
-}
+use crate::orig_state::{LibraryDesc, OrigState};
+use crate::submission::{LibraryScan, Submission};
 
 fn get_book_shipment(
     scanned_books: &[usize],
